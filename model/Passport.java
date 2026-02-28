@@ -18,7 +18,7 @@ public class Passport {
     private String country;
 
     @OneToOne //one person have one passport
-    @JoinColumn(name = "person_id") //FK //we are creating new column in passport caled person-id
+    @JoinColumn(name = "person_id", nullable = false, unique = true)//FK //we are creating new column in passport caled person-id
     private Person person;
 }
 

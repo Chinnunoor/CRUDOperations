@@ -1,28 +1,3 @@
-//package com.example.CRUD.Operations.service;
-//
-//import com.example.CRUD.Operations.model.Person;
-//import com.example.CRUD.Operations.repository.PersonRepository;
-//import org.springframework.stereotype.Service;
-//
-//import java.util.List;
-//
-//@Service
-//public class PersonService {
-//
-//    private final PersonRepository repo;
-//
-//    public PersonService(PersonRepository repo) {
-//        this.repo = repo;
-//    }
-//
-//    public Person save(Person p) {
-//        return repo.save(p);
-//    }
-//
-//    public List<Person> getAll() {
-//        return repo.findAll();
-//    }
-//}
 package com.example.CRUD.Operations.service;
 
 import com.example.CRUD.Operations.model.Person;
@@ -47,6 +22,10 @@ public class PersonService {
     public Person saveData(Person p) {
         log.info("SERVICE -> Saving person to DB | firstName={}, lastName={}",
                 p.getFirstName(), p.getLastName());
+        //link Passport -> Person (because person_id is NOT NULL)
+        if (p.getPassport() != null) {
+            p.getPassport().setPerson(p);
+        }
 
         Person saved = repo.save(p);//insert into persons (address,date_of_birth,first_name,last_name,location,phone_number) values (?,?,?,?,?,?)
 

@@ -5,14 +5,14 @@ import lombok.Data;
 import java.util.List;
 import java.util.Set;
 import java.time.LocalDate;
-@Data
-@Entity
+@Data //generates getters/setters etc automatically.
+@Entity //JPA Entity → means it maps to a database table.
 @Table(name = "persons")
 public class Person {
 
     @Id//primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //DB auto generates ID
+    private Long id; //pk
 
     private String firstName;
     private String lastName;
@@ -21,11 +21,11 @@ public class Person {
     private String address;
     private String location;
     // One Person → One Passport
-    @OneToOne(mappedBy = "person", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     private Passport passport;
 
     // One Person → Many Addresses
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL) //also save new Addresses inside addresses
     private List<Address> addresses;
 
     // Many Persons ↔ Many Skills
