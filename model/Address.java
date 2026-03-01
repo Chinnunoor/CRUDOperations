@@ -1,6 +1,8 @@
 package com.example.CRUD.Operations.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
@@ -13,12 +15,16 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @NotBlank(message = "Address line is required")
     private String line1;
+    @NotBlank(message = "City is required")
     private String city;
+    @NotBlank(message = "State is required")
     private String state;
+    @NotBlank(message = "ZIP code is Required")
     private String zip;
-
+    @NotNull(message = "Person reference is required")
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "person_id") //it will craete a new column in db called person id, when you put @joincolumn that menas it is foreign key
     private Person person;

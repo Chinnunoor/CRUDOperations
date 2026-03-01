@@ -2,6 +2,7 @@ package com.example.CRUD.Operations.controller;
 
 import com.example.CRUD.Operations.model.Passport;
 import com.example.CRUD.Operations.service.PassportService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class PassportController {
     private PassportService service;
 
     @PostMapping
-    public Passport create(@RequestBody Passport p) {
+    public Passport create(@Valid  @RequestBody Passport p) {
 
         log.info("CONTROLLER -> Received POST /passports | passportNumber={}, country={}",
                 p.getPassportNumber(), p.getCountry());

@@ -2,6 +2,7 @@ package com.example.CRUD.Operations.controller;
 
 import com.example.CRUD.Operations.model.Address;
 import com.example.CRUD.Operations.service.AddressService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class AddressController {
     private AddressService service; //Spring creates object for us if we annotate as @autowired
 
     @PostMapping
-    public Address create(@RequestBody Address a) {
+    public Address create(@Valid @RequestBody Address a) {
 
         log.info("CONTROLLER -> Received POST /addresses | city={}, state={}",
                 a.getCity(), a.getState());
