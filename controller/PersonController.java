@@ -1,6 +1,6 @@
 package com.example.CRUD.Operations.controller;
-
-import com.example.CRUD.Operations.exception.PersonNotFoundException;
+import com.example.CRUD.Operations.dto.PersonDTO;
+import com.example.CRUD.Operations.mapper.PersonMapper;
 import com.example.CRUD.Operations.model.Person;
 import com.example.CRUD.Operations.service.PersonService;
 import jakarta.validation.Valid;
@@ -21,42 +21,51 @@ public class PersonController {
     private PersonService service;
 
     @PostMapping
-    public Person create(@Valid @RequestBody Person p) {
+    public PersonDTO create(@Valid @RequestBody PersonDTO dto) {
 
         log.info("CONTROLLER -> Received POST /persons | firstName={}, lastName={}",
-                p.getFirstName(), p.getLastName());
+                dto.getFirstName(), dto.getLastName());
 
-        Person saved = service.saveData(p);
+        Person saved = service.saveData(PersonMapper.toEntity(dto), dto.getSkillIds()
+        );
 
         log.info("CONTROLLER <- Returning response for POST /persons | id={}", saved.getId());
-        return saved;
+        return PersonMapper.toDTO(saved);
     }
 
     @GetMapping
-    public List<Person> getAll() {
+    public List<PersonDTO> getAll() {
         log.info("CONTROLLER -> Received GET /persons");
 
-        List<Person> persons = service.getAll();
+        List<PersonDTO> dtoList = service.getAll()
+                .stream()
+                .map(PersonMapper::toDTO)
+                .toList();
 
-        log.info("CONTROLLER <- Returning response for GET /persons | count={}", persons.size());
-        return persons;
+        log.info("CONTROLLER <- Returning response for GET /persons | count={}", dtoList.size());
+        return dtoList;
     }
     @GetMapping("/{id}")
-    public Person getById(@PathVariable Long id) {
+    public PersonDTO getById(@PathVariable Long id) {
         log.info("CONTROLLER -> GET /persons/{}", id);
 
         Person person = service.getById(id);
 
         log.info("CONTROLLER <- Returning person {}", person.getId());
-        return person;
+        return PersonMapper.toDTO(person);
     }
     @PutMapping("/{id}")
-    public Person updatePerson(@PathVariable Long id,
-                               @Valid @RequestBody Person person) {
+    public PersonDTO updatePerson(@PathVariable Long id,
+                               @Valid @RequestBody PersonDTO dto) {
 
         log.info("CONTROLLER -> PUT /persons/{}", id);
+        Person updated = service.update(
+                id,
+                PersonMapper.toEntity(dto),
+                dto.getSkillIds()
+        );
 
-        return service.update(id, person);
+        return PersonMapper.toDTO(updated);
     }
     @DeleteMapping("/{id}")
     public void deletePerson(@PathVariable Long id) {

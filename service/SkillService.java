@@ -20,28 +20,38 @@ public class SkillService {
         this.repo = repo;
     }
 
+    // CREATE
     public Skill save(Skill s) {
-
-        log.info("SERVICE -> Saving skill | name={}",
-                s.getName());
-
-        Skill saved = repo.save(s);
-
-        log.info("SERVICE <- Skill saved | id={}",
-                saved.getId());
-
-        return saved;
+        log.info("SERVICE -> Saving skill {}", s.getName());
+        return repo.save(s);
     }
 
+    // GET ALL
     public List<Skill> getAll() {
+        return repo.findAll();
+    }
 
-        log.info("SERVICE -> Fetching all skills");
+    // GET BY ID
+    public Skill getById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Skill not found"));
+    }
 
-        List<Skill> list = repo.findAll();
+    // UPDATE
+    public Skill update(Long id, Skill s) {
+        Skill existing = getById(id);
 
-        log.info("SERVICE <- Total skills fetched = {}",
-                list.size());
+        existing.setName(s.getName());
 
-        return list;
+        if (s.getPersons() != null) {
+            existing.setPersons(s.getPersons());
+        }
+
+        return repo.save(existing);
+    }
+
+    // DELETE
+    public void delete(Long id) {
+        repo.deleteById(id);
     }
 }

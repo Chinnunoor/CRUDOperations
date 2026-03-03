@@ -20,28 +20,42 @@ public class AddressService {
         this.repo = repo;
     }
 
+    // CREATE
     public Address save(Address a) {
-
-        log.info("SERVICE -> Saving address | city={}, state={}",
-                a.getCity(), a.getState());
-
-        Address saved = repo.save(a);
-
-        log.info("SERVICE <- Address saved | id={}",
-                saved.getId());
-
-        return saved;
+        log.info("SERVICE -> Saving address");
+        return repo.save(a);
     }
 
+    // GET ALL
     public List<Address> getAll() {
-
         log.info("SERVICE -> Fetching all addresses");
+        return repo.findAll();
+    }
 
-        List<Address> list = repo.findAll();
+    // GET BY ID
+    public Address getById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+    }
 
-        log.info("SERVICE <- Total addresses fetched = {}",
-                list.size());
+    // UPDATE
+    public Address update(Long id, Address a) {
+        Address existing = getById(id);
 
-        return list;
+        existing.setLine1(a.getLine1());
+        existing.setCity(a.getCity());
+        existing.setState(a.getState());
+        existing.setZip(a.getZip());
+
+        if (a.getPerson() != null) {
+            existing.setPerson(a.getPerson());
+        }
+
+        return repo.save(existing);
+    }
+
+    // DELETE
+    public void delete(Long id) {
+        repo.deleteById(id);
     }
 }

@@ -1,11 +1,12 @@
 package com.example.CRUD.Operations.controller;
 
+import com.example.CRUD.Operations.dto.PassportDTO;
+import com.example.CRUD.Operations.mapper.PassportMapper;
 import com.example.CRUD.Operations.model.Passport;
 import com.example.CRUD.Operations.service.PassportService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,33 +18,68 @@ public class PassportController {
     private static final Logger log =
             LoggerFactory.getLogger(PassportController.class);
 
-    @Autowired
-    private PassportService service;
+    private final PassportService service;
 
-    @PostMapping
-    public Passport create(@Valid  @RequestBody Passport p) {
-
-        log.info("CONTROLLER -> Received POST /passports | passportNumber={}, country={}",
-                p.getPassportNumber(), p.getCountry());
-
-        Passport saved = service.save(p);
-
-        log.info("CONTROLLER <- Returning response for POST /passports | id={}",
-                saved.getId());
-
-        return saved;
+    public PassportController(PassportService service) {
+        this.service = service;
     }
 
+    // CREATE
+    @PostMapping
+    public PassportDTO create(@Valid @RequestBody PassportDTO dto) {
+
+        log.info("CONTROLLER -> POST /passports | passportNumber={}, country={}",
+                dto.getPassportNumber(), dto.getCountry());
+
+        Passport saved = service.save(PassportMapper.toEntity(dto));
+
+        log.info("CONTROLLER <- Passport created id={}", saved.getId());
+
+        return PassportMapper.toDTO(saved);
+    }
+
+    // GET ALL
     @GetMapping
-    public List<Passport> getAll() {
+    public List<PassportDTO> getAll() {
 
-        log.info("CONTROLLER -> Received GET /passports");
+        log.info("CONTROLLER -> GET /passports");
 
-        List<Passport> passports = service.getAll();
+        return service.getAll()
+                .stream()
+                .map(PassportMapper::toDTO)
+                .toList();
+    }
 
-        log.info("CONTROLLER <- Returning response for GET /passports | count={}",
-                passports.size());
+    // GET BY ID
+    @GetMapping("/{id}")
+    public PassportDTO getById(@PathVariable Long id) {
 
-        return passports;
+        log.info("CONTROLLER -> GET /passports/{}", id);
+
+        Passport passport = service.getById(id);
+
+        return PassportMapper.toDTO(passport);
+    }
+
+    // UPDATE
+    @PutMapping("/{id}")
+    public PassportDTO update(@PathVariable Long id,
+                              @Valid @RequestBody PassportDTO dto) {
+
+        log.info("CONTROLLER -> PUT /passports/{}", id);
+
+        Passport updated =
+                service.update(id, PassportMapper.toEntity(dto));
+
+        return PassportMapper.toDTO(updated);
+    }
+
+    // DELETE
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+
+        log.info("CONTROLLER -> DELETE /passports/{}", id);
+
+        service.delete(id);
     }
 }
