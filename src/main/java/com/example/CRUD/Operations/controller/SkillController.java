@@ -118,8 +118,15 @@ public class SkillController {
         log.info("CONTROLLER -> GET /skills/{}", id);
         return SkillMapper.toDTO(service.getById(id));
     }
+    @GetMapping("/person/{personId}")
+    public List<SkillDTO> getSkillsByPerson(@PathVariable Long personId) {
 
-    // UPDATE (keep your existing update behavior using SkillDTO)
+        return service.getByPersonId(personId)
+                .stream()
+                .map(SkillMapper::toDTO)
+                .toList();
+    }
+    // UPDATE
     @PutMapping("/{id}")
     public SkillDTO update(@PathVariable Long id, @Valid @RequestBody SkillDTO dto) {
         log.info("CONTROLLER -> PUT /skills/{} name={}", id, dto.getName());

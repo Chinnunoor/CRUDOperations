@@ -7,6 +7,8 @@ import com.example.CRUD.Operations.model.Person;
 import com.example.CRUD.Operations.model.Skill;
 import com.example.CRUD.Operations.repository.PersonRepository;
 import com.example.CRUD.Operations.repository.SkillRepository;
+
+import org.springframework.data.domain.Sort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,22 +33,34 @@ public class SkillService {
 
     // CREATE from request DTO
     public SkillDTO createFromRequest(SkillRequestDTO request) {
+
         log.info("SERVICE -> Saving skill {}", request.getName());
 
         Skill skill = new Skill();
         skill.setName(request.getName());
 
         if (request.getPersonIds() != null && !request.getPersonIds().isEmpty()) {
+
             List<Person> persons = personRepo.findAllById(request.getPersonIds());
             Set<Person> unique = new HashSet<>(persons);
+
             skill.setPersons(unique);
+
+            // IMPORTANT: update owning side
+            for (Person person : unique) {
+                if (person.getSkills() == null) {
+                    person.setSkills(new HashSet<>());
+                }
+                person.getSkills().add(skill);
+            }
         }
 
         Skill saved = repo.save(skill);
+
         return SkillMapper.toDTO(saved);
     }
 
-    // CREATE (keep if you want)
+    // CREATE simple
     public Skill save(Skill s) {
         log.info("SERVICE -> Saving skill {}", s.getName());
         return repo.save(s);
@@ -54,7 +68,7 @@ public class SkillService {
 
     // GET ALL
     public List<Skill> getAll() {
-        return repo.findAll();
+        return repo.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
 
     // GET BY ID
@@ -62,9 +76,12 @@ public class SkillService {
         return repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Skill not found"));
     }
-
+    public List<Skill> getByPersonId(Long personId) {
+        return repo.findByPersonsId(personId);
+    }
     // UPDATE
     public Skill update(Long id, Skill s) {
+
         Skill existing = getById(id);
 
         existing.setName(s.getName());

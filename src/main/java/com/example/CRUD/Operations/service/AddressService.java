@@ -37,7 +37,12 @@ public class AddressService {
         return repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Address not found"));
     }
+    public List<Address> getByPersonId(Long personId) {
 
+        log.info("SERVICE -> Fetching addresses for personId={}", personId);
+
+        return repo.findByPersonId(personId);
+    }
     // UPDATE
     public Address update(Long id, Address a) {
         Address existing = getById(id);

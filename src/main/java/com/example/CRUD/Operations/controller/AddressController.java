@@ -56,7 +56,16 @@ public class AddressController {
 
         return AddressMapper.toDTO(service.getById(id));
     }
+    @GetMapping("/person/{personId}")
+    public List<AddressDTO> getByPersonId(@PathVariable Long personId) {
 
+        log.info("CONTROLLER -> GET /addresses/person/{}", personId);
+
+        return service.getByPersonId(personId)
+                .stream()
+                .map(AddressMapper::toDTO)
+                .toList();
+    }
     // UPDATE
     @PutMapping("/{id}")
     public AddressDTO update(@PathVariable Long id,
