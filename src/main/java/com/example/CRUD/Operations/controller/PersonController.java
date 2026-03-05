@@ -4,6 +4,8 @@ import com.example.CRUD.Operations.mapper.PersonMapper;
 import com.example.CRUD.Operations.model.Person;
 import com.example.CRUD.Operations.service.PersonService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ public class PersonController {
     private static final Logger log = LoggerFactory.getLogger(PersonController.class);
 
     @Autowired
-    private PersonService service;
+    private PersonService service; // injecting to person service
 
     @PostMapping
     public PersonDTO create(@Valid @RequestBody PersonDTO dto) {
@@ -34,16 +36,17 @@ public class PersonController {
     }
 
     @GetMapping
-    public List<PersonDTO> getAll() {
-        log.info("CONTROLLER -> Received GET /persons");
+    public Page<PersonDTO> getAll(Pageable pageable) {
 
-        List<PersonDTO> dtoList = service.getAll()
-                .stream()
-                .map(PersonMapper::toDTO)
-                .toList();
+        log.info("CONTROLLER -> Received GET /persons with pagination");
 
-        log.info("CONTROLLER <- Returning response for GET /persons | count={}", dtoList.size());
-        return dtoList;
+        Page<Person> page = service.getAll(pageable);
+
+        Page<PersonDTO> dtoPage = page.map(PersonMapper::toDTO);
+
+        log.info("CONTROLLER <- Returning paginated response");
+
+        return dtoPage;
     }
     @GetMapping("/{id}")
     public PersonDTO getById(@PathVariable Long id) {

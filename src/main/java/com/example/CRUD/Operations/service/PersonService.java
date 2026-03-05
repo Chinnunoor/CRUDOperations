@@ -5,6 +5,8 @@ import com.example.CRUD.Operations.model.Person;
 import com.example.CRUD.Operations.model.Skill;
 import com.example.CRUD.Operations.repository.PersonRepository;
 import com.example.CRUD.Operations.repository.SkillRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -50,9 +52,11 @@ public class PersonService {
     }
 
     // READ ALL
-    public List<Person> getAll() {
-        log.info("SERVICE -> Fetching all persons");
-        return repo.findAll();
+    public Page<Person> getAll(Pageable pageable) {
+
+        log.info("SERVICE -> Fetching persons with pagination");
+
+        return repo.findAll(pageable);
     }
 
     // READ BY ID
